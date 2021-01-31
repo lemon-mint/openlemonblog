@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/labstack/echo/v4"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 //Template wrapper
@@ -21,6 +22,7 @@ func main() {
 	t := &Template{
 		templates: template.Must(template.ParseGlob("views/*.html")),
 	}
+	p := bluemonday.UGCPolicy()
 	e := echo.New()
 	e.Renderer = t
 	e.Static("/public", "public")
@@ -34,7 +36,7 @@ func main() {
 				"ghead":    "",
 				"gfooter":  "",
 
-				"body":        "",
+				"body":        template.HTML(p.Sanitize("body")),
 				"tag":         []string{},
 				"ogimg":       false,
 				"description": "",
